@@ -12,7 +12,7 @@ FALLBACK_ARGS = dict(namespace='default', filename='k8s', directory='diagrams',
                      label='Kubernetes',)
 
 
-class ParseArgs():
+class ParseArgs:
     def __init__(self):
 
         # Parse arguments passed at cli
@@ -59,16 +59,17 @@ class ParseArgs():
         self.args = parser.parse_args()
 
 
-class K8sDiagrams():
+class K8sDiagrams:
 
-    def __init__(self) -> None:
+    def __init__(self, namespace) -> None:
 
         config.load_kube_config()
         self.v1 = client.CoreV1Api()
+        self.namespace = namespace
 
     def get_pods(self) -> list:
 
-        pod_list = self.v1.list_namespaced_pod('default')
+        pod_list = self.v1.list_namespaced_pod(self.namespace)
         return pod_list.items
 
 
@@ -78,7 +79,7 @@ def main():
     logging.basicConfig(format="%(message)s",
                         stream=sys.stdout, level=logging.INFO)
 
-    k8s_diagrams = K8sDiagrams()
+    k8s_diagrams = K8sDiagrams(namespace=options.args.namespace)
     pods = k8s_diagrams.get_pods()
 
     for pod in pods:
