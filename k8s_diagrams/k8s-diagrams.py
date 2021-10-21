@@ -72,6 +72,11 @@ class K8sDiagrams:
         pod_list = self.v1.list_namespaced_pod(self.namespace)
         return pod_list.items
 
+    def get_services(self) -> list:
+
+        service_list = self.v1.list_namespaced_service(self.namespace)
+        return service_list.items
+
 
 def main():
 
@@ -83,7 +88,13 @@ def main():
     pods = k8s_diagrams.get_pods()
 
     for pod in pods:
-        print(pod.metadata.name)
+        logging.info(pod.metadata.name)
+        logging.info(pod.metadata.labels)
+
+    services = k8s_diagrams.get_services()
+
+    for service in services:
+        logging.info(service.spec.selector)
 
 
 if __name__ == '__main__':
