@@ -65,12 +65,19 @@ class K8sDiagrams:
 
         config.load_kube_config()
         self.v1 = client.CoreV1Api()
+        self.appsv1 = client.AppsV1Api()
         self.namespace = namespace
 
     def get_pods(self) -> list:
 
         pod_list = self.v1.list_namespaced_pod(self.namespace)
         return pod_list.items
+
+    def get_deployments(self) -> list:
+
+        deployment_list = self.appsv1.list_namespaced_deployment(
+            self.namespace)
+        return deployment_list.items
 
     def get_services(self) -> list:
 
@@ -90,6 +97,11 @@ def main():
     for pod in pods:
         logging.info(pod.metadata.name)
         logging.info(pod.metadata.labels)
+
+    deployments = k8s_diagrams.get_deployments()
+
+    for deployment in deployments:
+        logging.info(deployment.metadata.name)
 
     services = k8s_diagrams.get_services()
 
