@@ -87,6 +87,7 @@ setup(
     ],
     install_requires=[
         "kubernetes",
+        "diagrams",
         "graphviz"
     ],
     cmdclass={
