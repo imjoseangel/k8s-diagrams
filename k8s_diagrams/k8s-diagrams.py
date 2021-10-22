@@ -86,6 +86,11 @@ class K8sDiagrams:
         service_list = self.v1.list_namespaced_service(self.namespace)
         return service_list.items
 
+    def create_diagram(self, label) -> None:
+
+        with Diagram(label, show=False):
+            Pod("lb")
+
 
 def main():
 
@@ -93,7 +98,8 @@ def main():
     logging.basicConfig(format="%(message)s",
                         stream=sys.stdout, level=logging.INFO)
 
-    k8s_diagrams = K8sDiagrams(namespace=options.args.namespace)
+    k8s_diagrams = K8sDiagrams(
+        namespace=options.args.namespace, label=options.args.label)
     pods = k8s_diagrams.get_pods()
 
     for pod in pods:
