@@ -6,6 +6,8 @@ from __future__ import (division, absolute_import, print_function,
 import logging
 import sys
 import argparse
+from diagrams import Diagram
+from diagrams.k8s.compute import Pod
 from kubernetes import client, config
 
 FALLBACK_ARGS = dict(namespace='default', filename='k8s', directory='diagrams',
