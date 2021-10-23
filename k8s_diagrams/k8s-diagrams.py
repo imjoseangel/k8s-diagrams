@@ -7,8 +7,10 @@ import logging
 import sys
 import argparse
 from diagrams import Cluster, Diagram
-from diagrams.k8s.compute import Pod
+from diagrams.k8s.clusterconfig import HPA
+from diagrams.k8s.compute import Deployment, Pod, ReplicaSet
 from diagrams.k8s.group import NS
+from diagrams.k8s.network import Ingress, Service
 from kubernetes import client, config
 
 FALLBACK_ARGS = dict(namespace='default', filename='k8s', directory='diagrams',
@@ -64,13 +66,14 @@ class ParseArgs:
 
 class K8sDiagrams:
 
-    def __init__(self, namespace, label) -> None:
+    def __init__(self, namespace, label, filename) -> None:
 
         config.load_kube_config()
         self.v1 = client.CoreV1Api()
         self.appsv1 = client.AppsV1Api()
         self.namespace = namespace
         self.label = label
+        self.filename = filename
 
     def get_pods(self) -> list:
 
@@ -88,16 +91,21 @@ class K8sDiagrams:
         service_list = self.v1.list_namespaced_service(self.namespace)
         return service_list.items
 
-    def create_diagram(self, pods) -> None:
+    def create_diagram(self, pods, services) -> None:
 
-        with Diagram(self.label, show=False):
+        with Diagram(self.label, show=False, filename=self.filename):
 
-            ns = NS(self.namespace)
+            # ns = NS(self.namespace)
 
-            with Cluster("Pods"):
+            with Cluster(self.namespace):
+                ns = NS(self.namespace)
+
                 pod_group = [Pod(pod.metadata.name) for pod in pods]
 
-            ns >> pod_group
+                services = [Service(service.metadata.name)
+                            for service in services]
+
+            pod_group
 
 
 def main():
@@ -107,14 +115,13 @@ def main():
                         stream=sys.stdout, level=logging.INFO)
 
     k8s_diagrams = K8sDiagrams(
-        namespace=options.args.namespace, label=options.args.label)
+        namespace=options.args.namespace, label=options.args.label,
+        filename=options.args.filename)
+
     pods = k8s_diagrams.get_pods()
+    services = k8s_diagrams.get_services()
 
-    k8s_diagrams.create_diagram(pods)
-
-    # for pod in pods:
-    #     logging.info(pod.metadata.name)
-    #     logging.info(pod.metadata.labels)
+    k8s_diagrams.create_diagram(pods, services)
 
     # deployments = k8s_diagrams.get_deployments()
 
