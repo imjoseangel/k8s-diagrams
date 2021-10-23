@@ -6,12 +6,13 @@ from __future__ import (division, absolute_import, print_function,
 import logging
 import sys
 import argparse
-from diagrams import Diagram
+from diagrams import Cluster, Diagram
 from diagrams.k8s.compute import Pod
+from diagrams.k8s.group import NS
 from kubernetes import client, config
 
 FALLBACK_ARGS = dict(namespace='default', filename='k8s', directory='diagrams',
-                     label='Kubernetes',)
+                     label='Kubernetes')
 
 
 class ParseArgs:
@@ -63,12 +64,13 @@ class ParseArgs:
 
 class K8sDiagrams:
 
-    def __init__(self, namespace) -> None:
+    def __init__(self, namespace, label) -> None:
 
         config.load_kube_config()
         self.v1 = client.CoreV1Api()
         self.appsv1 = client.AppsV1Api()
         self.namespace = namespace
+        self.label = label
 
     def get_pods(self) -> list:
 
@@ -86,10 +88,16 @@ class K8sDiagrams:
         service_list = self.v1.list_namespaced_service(self.namespace)
         return service_list.items
 
-    def create_diagram(self, label) -> None:
+    def create_diagram(self, pods) -> None:
 
-        with Diagram(label, show=False):
-            Pod("lb")
+        with Diagram(self.label, show=False):
+
+            ns = NS(self.namespace)
+
+            with Cluster("Pods"):
+                pod_group = [Pod(pod.metadata.name) for pod in pods]
+
+            ns >> pod_group
 
 
 def main():
@@ -102,19 +110,21 @@ def main():
         namespace=options.args.namespace, label=options.args.label)
     pods = k8s_diagrams.get_pods()
 
-    for pod in pods:
-        logging.info(pod.metadata.name)
-        logging.info(pod.metadata.labels)
+    k8s_diagrams.create_diagram(pods)
 
-    deployments = k8s_diagrams.get_deployments()
+    # for pod in pods:
+    #     logging.info(pod.metadata.name)
+    #     logging.info(pod.metadata.labels)
 
-    for deployment in deployments:
-        logging.info(deployment.metadata.name)
+    # deployments = k8s_diagrams.get_deployments()
 
-    services = k8s_diagrams.get_services()
+    # for deployment in deployments:
+    #     logging.info(deployment.metadata.name)
 
-    for service in services:
-        logging.info(service.spec.selector)
+    # services = k8s_diagrams.get_services()
+
+    # for service in services:
+    #     logging.info(service.spec.selector)
 
 
 if __name__ == '__main__':
