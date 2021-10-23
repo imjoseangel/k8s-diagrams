@@ -98,12 +98,10 @@ class K8sDiagrams:
             # ns = NS(self.namespace)
 
             with Cluster(self.namespace):
-                ns = NS(self.namespace)
 
+                NS(self.namespace)
                 pod_group = [Pod(pod.metadata.name) for pod in pods]
-
-                services = [Service(service.metadata.name)
-                            for service in services]
+                [Service(service.metadata.name) for service in services]
 
             pod_group
 
