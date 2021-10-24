@@ -11,7 +11,7 @@ from diagrams import Cluster, Diagram
 from diagrams.k8s.clusterconfig import HPA
 from diagrams.k8s.compute import Deployment, Pod, ReplicaSet
 from diagrams.k8s.group import NS
-from diagrams.k8s.network import Ingress, Service
+from diagrams.k8s.network import Ingress, Service, Endpoint
 from kubernetes import client, config
 from kubernetes.client.exceptions import ApiException
 
@@ -98,6 +98,11 @@ class K8sDiagrams:
 
         service_list = self.v1.list_namespaced_service(self.namespace)
         return service_list.items
+
+    def get_endpoints(self) -> list:
+
+        endpoint_list = self.v1.list_namespaced_endpoints(self.namespace)
+        return endpoint_list.items
 
     def create_diagram(self, pods, services) -> None:
 
