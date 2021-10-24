@@ -80,24 +80,24 @@ class K8sDiagrams:
     def get_pods(self) -> list:
 
         try:
-            pod_list = self.v1.list_namespaced_pod(self.namespace)
+            pods = self.v1.list_namespaced_pod(self.namespace)
         except ApiException as e:
             logging.error(
                 f'Exception when calling CoreV1Api->list_namespaced_pod: {e}')
             sys.exit(1)
 
-        return pod_list.items
+        return pods.items
 
     def get_deployments(self) -> list:
 
-        deployment_list = self.appsv1.list_namespaced_deployment(
+        deployments = self.appsv1.list_namespaced_deployment(
             self.namespace)
-        return deployment_list.items
+        return deployments.items
 
     def get_services(self) -> list:
 
-        service_list = self.v1.list_namespaced_service(self.namespace)
-        return service_list.items
+        services = self.v1.list_namespaced_service(self.namespace)
+        return services.items
 
     def get_endpoints(self) -> list:
 
