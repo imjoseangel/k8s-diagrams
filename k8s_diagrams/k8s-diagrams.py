@@ -12,6 +12,7 @@ from diagrams.k8s.compute import Deployment, Pod, ReplicaSet
 from diagrams.k8s.group import NS
 from diagrams.k8s.network import Ingress, Service
 from kubernetes import client, config
+from kubernetes.client.exceptions import ApiException
 
 FALLBACK_ARGS = dict(namespace='default', filename='k8s', directory='diagrams',
                      label='Kubernetes')
@@ -77,7 +78,13 @@ class K8sDiagrams:
 
     def get_pods(self) -> list:
 
-        pod_list = self.v1.list_namespaced_pod(self.namespace)
+        try:
+            pod_list = self.v1.list_namespaced_pod(self.namespace)
+        except ApiException as e:
+            logging.error(
+                f'Exception when calling CoreV1Api->list_namespaced_pod: {e}')
+            sys.exit(1)
+
         return pod_list.items
 
     def get_deployments(self) -> list:
