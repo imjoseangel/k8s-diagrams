@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=W1203
 
 from __future__ import (division, absolute_import, print_function,
                         unicode_literals)
@@ -108,7 +109,8 @@ class K8sDiagrams:
 
                 NS(self.namespace)
                 pod_group = [Pod(pod.metadata.name) for pod in pods]
-                [Service(service.metadata.name) for service in services]
+                service_group = [Service(service.metadata.name)
+                                 for service in services]
 
             pod_group
 
