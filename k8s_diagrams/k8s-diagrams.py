@@ -9,7 +9,7 @@ import sys
 import argparse
 from diagrams import Cluster, Diagram
 from diagrams.k8s.clusterconfig import HPA
-from diagrams.k8s.compute import Deployment, Pod, ReplicaSet
+from diagrams.k8s.compute import Deploy, Pod, RS
 from diagrams.k8s.group import NS
 from diagrams.k8s.network import Ingress, Service, Endpoint
 from kubernetes import client, config
@@ -108,25 +108,28 @@ class K8sDiagrams:
 
         with Diagram(self.label, show=False, filename=self.filename):
 
-            pod_group = [Pod(pod.metadata.name) for pod in pods]
+            # pod_group = [Pod(pod.metadata.name) for pod in pods]
 
             for deployment in deployments:
-                Deployment(deployment.metadata.name) >> ReplicaSet(
-                    deployment.metadata.name) >> pod_group
+                if deployment.spec.selector.match_labels:
 
-                # ns = NS(self.namespace)
-            # for service in services:
-            #     svc = Service(service.metadata.name)
-            #     svc >> Pod(service.metadata.name)
+                    [Pod(pod.metadata.name) for pod in pods if pod.metadata.labels.get(
+                        'app') == deployment.spec.selector.match_labels.get('app')] << Deploy(
+                        deployment.metadata.name)
 
-            # with Cluster(self.namespace):
+                    # ns = NS(self.namespace)
+                    # for service in services:
+                    #     svc = Service(service.metadata.name)
+                    #     svc >> Pod(service.metadata.name)
 
-                # NS(self.namespace)
+                    # with Cluster(self.namespace):
 
-                # service_group = [Service(service.metadata.name)
-                #                  for service in services]
+                    # NS(self.namespace)
 
-                # pod_group
+                    # service_group = [Service(service.metadata.name)
+                    #                  for service in services]
+
+                    # pod_group
 
 
 def main():
