@@ -116,6 +116,13 @@ class K8sDiagrams:
                     'app') == deployment.spec.selector.match_labels.get('app')] << Deploy(
                     deployment.metadata.name)
 
+            for service in services:
+
+                if service.spec.selector:
+                    [Pod(pod.metadata.name) for pod in pods if pod.metadata.labels.get(
+                        'app') == service.spec.selector.get('app')] << Service(
+                            service.metadata.name)
+
                 # ns = NS(self.namespace)
                 # for service in services:
                 #     svc = Service(service.metadata.name)
