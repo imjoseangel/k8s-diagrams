@@ -104,16 +104,20 @@ class K8sDiagrams:
         endpoint_list = self.v1.list_namespaced_endpoints(self.namespace)
         return endpoint_list.items
 
-    def create_diagram(self, pods, services, deployments) -> None:
+    def create_diagram(self, pods, services, endpoints) -> None:
 
         with Diagram(self.label, show=False, filename=self.filename):
 
             # pod_group = [Pod(pod.metadata.name) for pod in pods]
 
-            [[Pod(pod.metadata.name)
-              for pod in pods if pod.metadata.labels.get(
-                'app') == deployment.spec.selector.match_labels.get('app')] <<
-                Deploy(deployment.metadata.name) for deployment in deployments]
+            [[Pod(pod.metadata.name) for pod in pods if pod.metadata.labels.get(
+                'app') == service.spec.selector.get('app')] << Service(
+                service.metadata.name) for service in services]
+
+            # [[Pod(pod.metadata.name)
+            #   for pod in pods if pod.metadata.labels.get(
+            #     'app') == deployment.spec.selector.match_labels.get('app')] <<
+            #     Deploy(deployment.metadata.name) for deployment in deployments]
 
             # for service in services:
 
@@ -147,11 +151,11 @@ def main():
         namespace=options.args.namespace, label=options.args.label,
         filename=options.args.filename)
 
-    deployments = k8s_diagrams.get_deployments()
+    endpoints = k8s_diagrams.get_endpoints()
     pods = k8s_diagrams.get_pods()
     services = k8s_diagrams.get_services()
 
-    k8s_diagrams.create_diagram(pods, services, deployments)
+    k8s_diagrams.create_diagram(pods, services, endpoints)
 
     # deployments = k8s_diagrams.get_deployments()
 
