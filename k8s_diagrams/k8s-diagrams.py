@@ -110,9 +110,11 @@ class K8sDiagrams:
 
             # pod_group = [Pod(pod.metadata.name) for pod in pods]
 
-            [[Pod(pod.metadata.name) for pod in pods if pod.metadata.labels.get(
+            apps = [[Pod(pod.metadata.name) for pod in pods if pod.metadata.labels.get(
                 'app') == service.spec.selector.get('app')] << Service(
                 service.metadata.name) for service in services]
+
+            apps.append(Endpoint(endpoints[0].metadata.name) >> Service())
 
             # [[Pod(pod.metadata.name)
             #   for pod in pods if pod.metadata.labels.get(
