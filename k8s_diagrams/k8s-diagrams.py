@@ -110,37 +110,20 @@ class K8sDiagrams:
 
             # pod_group = [Pod(pod.metadata.name) for pod in pods]
 
-            apps = [[Pod(pod.metadata.name) for pod in pods if pod.metadata.labels.get(
-                'app') == service.spec.selector.get('app')] << Service(
-                service.metadata.name) for service in services]
+            with Cluster(self.namespace):
 
-            apps.append(Endpoint(endpoints[0].metadata.name) >> Service())
+                NS(self.namespace)
+
+                apps = [[Pod(pod.metadata.name) for pod in pods if pod.metadata.labels.get(
+                    'app') == service.spec.selector.get('app')] << Service(
+                    service.metadata.name) for service in services]
+
+                apps.append(Endpoint(endpoints[0].metadata.name) >> Service())
 
             # [[Pod(pod.metadata.name)
             #   for pod in pods if pod.metadata.labels.get(
             #     'app') == deployment.spec.selector.match_labels.get('app')] <<
             #     Deploy(deployment.metadata.name) for deployment in deployments]
-
-            # for service in services:
-
-            #     if service.spec.selector:
-            #         [Pod(pod.metadata.name) for pod in pods if pod.metadata.labels.get(
-            #             'app') == service.spec.selector.get('app')] << Service(
-            #                 service.metadata.name)
-
-            # ns = NS(self.namespace)
-            # for service in services:
-            #     svc = Service(service.metadata.name)
-            #     svc >> Pod(service.metadata.name)
-
-            # with Cluster(self.namespace):
-
-            # NS(self.namespace)
-
-            # service_group = [Service(service.metadata.name)
-            #                  for service in services]
-
-            # pod_group
 
 
 def main():
