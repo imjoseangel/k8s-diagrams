@@ -114,10 +114,10 @@ class K8sDiagrams:
 
                 NS(self.namespace)
 
-                apps = [[Pod(pod.metadata.name) for pod in pods if pod.metadata.labels.get(
-                    'app') == service.spec.selector.get('app')] << Endpoint(service.metadata.name) << Service(
-                        service.metadata.name)
-                    for service in services]
+                apps = [[Pod(pod.metadata.name) for pod in pods if
+                         pod.metadata.labels.get('app') == service.spec.selector.get('app')] <<
+                        Endpoint(service.metadata.name) << Service(
+                            service.metadata.name) for service in services]
 
                 # apps.append([Endpoint(endpoint.metadata.name) << Service(
                 #     endpoint.metadata.name)
