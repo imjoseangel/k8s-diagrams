@@ -118,7 +118,10 @@ class K8sDiagrams:
                     'app') == service.spec.selector.get('app')] << Service(
                     service.metadata.name) for service in services]
 
-                apps.append(Endpoint(endpoints[0].metadata.name) >> Service())
+                print([endpoint.metadata.name for endpoint in endpoints])
+
+                apps.append([Endpoint(endpoint.metadata.name)
+                            for endpoint in endpoints] >> Service())
 
             # [[Pod(pod.metadata.name)
             #   for pod in pods if pod.metadata.labels.get(
