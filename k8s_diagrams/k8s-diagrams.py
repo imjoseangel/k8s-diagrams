@@ -4,6 +4,7 @@
 
 from __future__ import (division, absolute_import, print_function,
                         unicode_literals)
+import itertools
 import logging
 import sys
 import argparse
@@ -114,10 +115,15 @@ class K8sDiagrams:
 
                 NS(self.namespace)
 
-                apps = [[Pod(pod.metadata.name) for pod in pods if
-                         pod.metadata.labels.get('app') == service.spec.selector.get('app')] <<
-                        Endpoint(service.metadata.name) << Service(
-                            service.metadata.name) for service in services]
+                [[Pod(pod.metadata.name) for pod in pods if
+                  pod.metadata.labels.get('app') == service.spec.selector.get('app')] <<
+                 Service(service.metadata.name) << Endpoint(service.metadata.name) for service in services]
+
+                podsvc = [[pod.metadata.name for pod in pods if
+                           pod.metadata.labels.get('app') == service.spec.selector.get('app')] for service in services]
+
+                podalone = [Pod(pod.metadata.name)
+                            for pod in pods if pod.metadata.name not in list(itertools.chain.from_iterable(podsvc))]
 
                 # apps.append([Endpoint(endpoint.metadata.name) << Service(
                 #     endpoint.metadata.name)
