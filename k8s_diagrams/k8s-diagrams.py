@@ -105,7 +105,7 @@ class K8sDiagrams:
         services = self.v1.list_namespaced_service(self.namespace)
         return services.items
 
-    def create_diagram(self, pods, services, deployments) -> None:
+    def create_diagram(self, pods, services, deployments, replicasets) -> None:
 
         with Diagram(self.label, show=False, filename=self.filename):
 
@@ -127,6 +127,9 @@ class K8sDiagrams:
 
                 [Deploy(deployment.metadata.name)
                  for deployment in deployments]
+
+                [RS(replicaset.metadata.name)
+                    for replicaset in replicasets]
 
                 # apps.append([Endpoint(endpoint.metadata.name) << Service(
                 #     endpoint.metadata.name)
@@ -151,8 +154,9 @@ def main():
     pods = k8s_diagrams.get_pods()
     services = k8s_diagrams.get_services()
     deployments = k8s_diagrams.get_deployments()
+    replicasets = k8s_diagrams.get_replicasets()
 
-    k8s_diagrams.create_diagram(pods, services, deployments)
+    k8s_diagrams.create_diagram(pods, services, deployments, replicasets)
 
     # for deployment in deployments:
     #     logging.info(deployment.metadata.name)
