@@ -125,6 +125,9 @@ class K8sDiagrams:
                 podalone = [Pod(pod.metadata.name)
                             for pod in pods if pod.metadata.name not in list(itertools.chain.from_iterable(podsvc))]
 
+                [Deploy(deployment.metadata.name)
+                 for deployment in deployments]
+
                 # apps.append([Endpoint(endpoint.metadata.name) << Service(
                 #     endpoint.metadata.name)
                 #     for endpoint in endpoints])
