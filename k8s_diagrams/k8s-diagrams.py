@@ -148,10 +148,9 @@ def main():
     endpoints = k8s_diagrams.get_endpoints()
     pods = k8s_diagrams.get_pods()
     services = k8s_diagrams.get_services()
+    deployments = k8s_diagrams.get_deployments()
 
     k8s_diagrams.create_diagram(pods, services, endpoints)
-
-    # deployments = k8s_diagrams.get_deployments()
 
     # for deployment in deployments:
     #     logging.info(deployment.metadata.name)
