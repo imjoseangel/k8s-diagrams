@@ -105,7 +105,7 @@ class K8sDiagrams:
         endpoint_list = self.v1.list_namespaced_endpoints(self.namespace)
         return endpoint_list.items
 
-    def create_diagram(self, pods, services, endpoints) -> None:
+    def create_diagram(self, pods, services, deployments) -> None:
 
         with Diagram(self.label, show=False, filename=self.filename):
 
