@@ -95,15 +95,15 @@ class K8sDiagrams:
             self.namespace)
         return deployments.items
 
+    def get_replicasets(self) -> list:
+
+        replicasets = self.appsv1.list_namespaced_replica_set(self.namespace)
+        return replicasets.items
+
     def get_services(self) -> list:
 
         services = self.v1.list_namespaced_service(self.namespace)
         return services.items
-
-    def get_endpoints(self) -> list:
-
-        endpoint_list = self.v1.list_namespaced_endpoints(self.namespace)
-        return endpoint_list.items
 
     def create_diagram(self, pods, services, deployments) -> None:
 
@@ -148,12 +148,11 @@ def main():
         namespace=options.args.namespace, label=options.args.label,
         filename=options.args.filename)
 
-    endpoints = k8s_diagrams.get_endpoints()
     pods = k8s_diagrams.get_pods()
     services = k8s_diagrams.get_services()
     deployments = k8s_diagrams.get_deployments()
 
-    k8s_diagrams.create_diagram(pods, services, endpoints)
+    k8s_diagrams.create_diagram(pods, services, deployments)
 
     # for deployment in deployments:
     #     logging.info(deployment.metadata.name)
