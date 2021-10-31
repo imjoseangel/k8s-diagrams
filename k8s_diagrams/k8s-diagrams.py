@@ -125,11 +125,9 @@ class K8sDiagrams:
                 podalone = [Pod(pod.metadata.name)
                             for pod in pods if pod.metadata.name not in list(itertools.chain.from_iterable(podsvc))]
 
-                [Deploy(deployment.metadata.name)
-                 for deployment in deployments]
-
-                [RS(replicaset.metadata.name)
-                    for replicaset in replicasets]
+                [[RS(replicaset.metadata.name)
+                    for replicaset in replicasets if
+                    replicaset.metadata.labels.get('app') == deployment.metadata.labels.get('app')] << Deploy(deployment.metadata.name) for deployment in deployments]
 
                 # apps.append([Endpoint(endpoint.metadata.name) << Service(
                 #     endpoint.metadata.name)
